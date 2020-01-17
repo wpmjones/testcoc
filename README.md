@@ -5,8 +5,26 @@ RESTful API to test COC libraries and scripts
 Generate both static and random data which is either correct or incorrect so that you 
 can test your code for how it handles user input and API output.
 
+# Examples
+`http://coctest.net/player_tags?limit=25`  
+`http://coctest.net/clan_tags/garbled?limit=10&wrong_prefix=True`  
+`http://coctest.net/dates?date_type=past&limit=50`
+
+# Response
+All enpoints respond with JSON formatted data.  Following is an example response:  
+```
+{
+  "tags": ["$LVYQQLUY", 
+           "$LLCCLPJ",
+           "%9RPVG8UP",
+           "@RC0C2PJ0",
+           "*P9YP2UVL"]
+}
+```
+
 # Endpoints
-##Player Tags  
+
+### Player Tags  
 **Valid Player Tags**    
 `/player_tags?limit=25&wrong_prefix=True`  
 Returns valid, properly structured player tags. 
@@ -38,7 +56,7 @@ None of these responses can be convered into a valid player tag.
 **Optional arguments:**  
 limit (integer): limit the list to a specific number of tags (default=all)
 
-##Clan Tags
+### Clan Tags  
 **Valid Clan Tags**    
 `/clan_tags?limit=25&wrong_prefix=True`  
 Returns valid, properly structured clan tags. 
@@ -70,7 +88,7 @@ None of these responses can be convered into a valid clan tag.
 **Optional arguments:**  
 limit (integer): limit the list to a specific number of tags (default=all)
 
-## Dates
+### Dates
 `/dates?date_type=past&limit=25`  
 Returns valid, Supercell style timestamps.
   
