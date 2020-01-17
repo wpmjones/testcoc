@@ -15,7 +15,8 @@ class About(Resource):
         return {"about": "This API has been put together for the simple purpose of providing test data (both "
                          "valid and invalid) so that developers can test their code without having to abuse the "
                          "official COC API.  This is also a great tool to see how your code handles invalid input "
-                         "from end users.  This API is maintained by TubaKid.  If you have questions or concerns, "
+                         "from end users.  This API is maintained by TubaKid.  Code can be found at "
+                         "https://github.com/wpmjones/testcoc. If you have questions or concerns, "
                          "you can find me on Discord at https://discord.gg/Eaja7gJ"}
 
 
@@ -136,7 +137,7 @@ class ValidClanTags(Resource):
                 if x not in return_list:
                     return_list.append(x)
         else:
-            return_list = constants.valid_player_tags
+            return_list = constants.valid_clan_tags
         if wrong_prefix:
             return_list = [tag.replace("#", random.choice(constants.prefixes)) for tag in return_list]
         return {"tags": return_list}
