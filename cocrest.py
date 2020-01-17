@@ -19,7 +19,7 @@ class About(Resource):
                          "you can find me on Discord at https://discord.gg/Eaja7gJ"}
 
 
-class ValidPlayerTag(Resource):
+class ValidPlayerTags(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument("limit",
@@ -50,7 +50,68 @@ class ValidPlayerTag(Resource):
         return {"tags": return_list}
 
 
-class GarbledPlayerTag(Resource):
+class GarbledPlayerTags(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument("limit",
+                                   type=int,
+                                   required=False,
+                                   default=None,
+                                   help="Optional limit on number of tags returned.")
+        self.reqparse.add_argument("wrong_prefix",
+                                   type=bool,
+                                   required=False,
+                                   default=False,
+                                   help="Choose whether or not to respond with incorrect prefixes.")
+
+    def get(self):
+        args = self.reqparse.parse_args()
+        limit = args['limit']
+        wrong_prefix = args['wrong_prefix']
+        return_list = []
+        if limit:
+            while len(return_list) < limit:
+                x = random.choice(constants.garbled_player_tags)
+                if x not in return_list:
+                    return_list.append(x)
+        else:
+            return_list = constants.garbled_player_tags
+        if wrong_prefix:
+            return_list = [tag.replace("#", random.choice(constants.prefixes)) for tag in return_list]
+        return {"tags": return_list}
+
+
+class InvalidPlayerTags(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument("limit",
+                                   type=int,
+                                   required=False,
+                                   default=None,
+                                   help="Optional limit on number of tags returned.")
+        # self.reqparse.add_argument("wrong_prefix",
+        #                            type=bool,
+        #                            required=False,
+        #                            default=False,
+        #                            help="Choose whether or not to responde with incorrect prefixes.")
+
+    def get(self):
+        args = self.reqparse.parse_args()
+        limit = args['limit']
+        if not limit:
+            limit = 190
+        return_list = []
+        while len(return_list) < limit:
+            if len(return_list) == len(constants.valid_player_tags):
+                break
+            tag = random.choice(constants.valid_player_tags)
+            bad_chars = ["X", "@", "4", "7", "i"]
+            if tag not in return_list:
+                return_list.append(f"{tag[:3]}{random.choice(bad_chars)}{tag[4:]}")
+        return {"tags": return_list}
+
+
+class ValidClanTags(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument("limit",
@@ -71,17 +132,17 @@ class GarbledPlayerTag(Resource):
         return_list = []
         if limit:
             while len(return_list) < limit:
-                x = random.choice(constants.garbled_player_tags)
+                x = random.choice(constants.valid_clan_tags)
                 if x not in return_list:
                     return_list.append(x)
         else:
-            return_list = constants.garbled_player_tags
+            return_list = constants.valid_player_tags
         if wrong_prefix:
             return_list = [tag.replace("#", random.choice(constants.prefixes)) for tag in return_list]
         return {"tags": return_list}
 
 
-class InvalidPlayerTag(Resource):
+class GarbledClanTags(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument("limit",
@@ -89,26 +150,51 @@ class InvalidPlayerTag(Resource):
                                    required=False,
                                    default=None,
                                    help="Optional limit on number of tags returned.")
-        # self.reqparse.add_argument("wrong_prefix",
-        #                            type=bool,
-        #                            required=False,
-        #                            default=False,
-        #                            help="Choose whether or not to responde with incorrect prefixes.")
+        self.reqparse.add_argument("wrong_prefix",
+                                   type=bool,
+                                   required=False,
+                                   default=False,
+                                   help="Choose whether or not to respond with incorrect prefixes.")
 
     def get(self):
         args = self.reqparse.parse_args()
         limit = args['limit']
-        # wrong_prefix = args['wrong_prefix']
+        wrong_prefix = args['wrong_prefix']
         return_list = []
         if limit:
             while len(return_list) < limit:
-                if len(return_list) == len(constants.invalid_tags):
-                    break
-                x = random.choice(constants.invalid_tags)
+                x = random.choice(constants.garbled_clan_tags)
                 if x not in return_list:
                     return_list.append(x)
         else:
-            return_list = constants.invalid_tags
+            return_list = constants.garbled_clan_tags
+        if wrong_prefix:
+            return_list = [tag.replace("#", random.choice(constants.prefixes)) for tag in return_list]
+        return {"tags": return_list}
+
+
+class InvalidClanTags(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument("limit",
+                                   type=int,
+                                   required=False,
+                                   default=None,
+                                   help="Optional limit on number of tags returned.")
+
+    def get(self):
+        args = self.reqparse.parse_args()
+        limit = args['limit']
+        if not limit:
+            limit = 190
+        return_list = []
+        while len(return_list) < limit:
+            if len(return_list) == len(constants.valid_clan_tags):
+                break
+            tag = random.choice(constants.valid_clan_tags)
+            bad_chars = ["X", "@", "4", "7", "i"]
+            if tag not in return_list:
+                return_list.append(f"{tag[:3]}{random.choice(bad_chars)}{tag[4:]}")
         return {"tags": return_list}
 
 
@@ -123,7 +209,7 @@ class Dates(Resource):
         self.reqparse.add_argument("date_type",
                                    type=str,
                                    required=True,
-                                   help="Required: Past or Future")
+                                   help="Required: Past or Future (date_type=future)")
 
     def get(self):
         args = self.reqparse.parse_args()
@@ -135,10 +221,12 @@ class Dates(Resource):
         while len(return_list) < limit:
             if tense == "past":
                 new_date = datetime.utcnow() - timedelta(hours=random.randint(0, 168),
-                                                         minutes=random.randint(1, 59))
+                                                         minutes=random.randint(1, 59),
+                                                         seconds=random.randint(1, 59))
             elif tense == "future":
                 new_date = datetime.utcnow() + timedelta(hours=random.randint(0, 168),
-                                                         minutes=random.randint(1, 59))
+                                                         minutes=random.randint(1, 59),
+                                                         seconds=random.randint(1, 59))
             else:
                 return {"error": "You must provide a valid argument for date_type (either past or future)."}
             return_list.append(new_date.strftime("%Y%m%dT%H%M%S.000Z"))
@@ -146,9 +234,12 @@ class Dates(Resource):
 
 
 api.add_resource(About, '/')
-api.add_resource(ValidPlayerTag, "/player_tag")
-api.add_resource(GarbledPlayerTag, "/player_tag/garbled")
-api.add_resource(InvalidPlayerTag, "/player_tag/invalid")
+api.add_resource(ValidPlayerTags, "/player_tags")
+api.add_resource(GarbledPlayerTags, "/player_tags/garbled")
+api.add_resource(InvalidPlayerTags, "/player_tags/invalid")
+api.add_resource(ValidClanTags, "/clan_tags")
+api.add_resource(GarbledClanTags, "/clan_tags/garbled")
+api.add_resource(InvalidClanTags, "/clan_tags/invalid")
 api.add_resource(Dates, "/dates")
 
 if __name__ == "__main__":

@@ -7,14 +7,16 @@ can test your code for how it handles user input and API output.
 
 # Endpoints
 ###Player Tags  
-`/player_tag?limit=25&wrong_prefix=True`  
+**Valid Player Tags**    
+`/player_tags?limit=25&wrong_prefix=True`  
 Returns valid, properly structured player tags. 
  
 **Optional arguments:**  
-limit (integer): limit the list to a specific number of tags
-wrong_prefix (boolean): replace the # with some other character
+limit (integer): limit the list to a specific number of tags (default=all)
+wrong_prefix (boolean): replace the # with some other character (default=False)
 
-`/player_tag/garbled?limit=5&wrong_prefix=True`  
+**Valid But Garbled Player Tags**  
+`/player_tags/garbled?limit=5&wrong_prefix=True`  
 Returns valid, improperly structured player tags representing possible input from end users. 
 This might include spaces where they don't belong, o's instead of 0's, mix of upper and 
 lowercase letters, and incorrect prefixes.
@@ -22,16 +24,23 @@ lowercase letters, and incorrect prefixes.
 All responses to this endpoint can be converted into valid player tags.
   
 **Optional arguments:**  
-limit (integer): limit the list to a specific number of tags
-wrong_prefix (boolean): replace the # with some other character
+limit (integer): limit the list to a specific number of tags (default=all)
+wrong_prefix (boolean): replace the # with some other character (default=False)
 
-`/player_tag/invalid?limit=10`  
+**Invalid Player Tags**  
+`/player_tags/invalid?limit=10`  
 Returns invalid, properly structed player tags. This might include tags with incorrect letters, 
 tags that are too long or too short, etc.  This is so that you can see what your code will do 
 with invalid tags. Wrong prefix is not an option here since we're testing invalid tags, not prefixes.
+
+None of these responses can be convered into a valid player tag.
   
 **Optional arguments:**  
-limit (integer): limit the list to a specific number of tags
+limit (integer): limit the list to a specific number of tags (default=all)
+
+###Clan Tags
+`/clan_tags?limit=25&wrong_prefix=True`  
+Returns valid, properly structured player tags. 
 
 ### Dates
 `/dates?date_type=past&limit=25`  
