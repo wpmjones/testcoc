@@ -1,5 +1,5 @@
 # testcoc
-RESTful API to test COC libraries and scripts
+RESTful API to test COC libraries and scripts. Hosted at http://coctest.net
 
 # What it does
 Generate both static and random data which is either correct or incorrect so that you 
