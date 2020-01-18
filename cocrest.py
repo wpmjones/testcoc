@@ -13,7 +13,7 @@ api = Api(app)
 
 
 def add_log(endpoint, *, limit=None, wrong_prefix=None, date_type=None):
-    conn = psycopg2.connect(host="172.104.144.45",
+    conn = psycopg2.connect(host=creds.pg_host,
                             dbname=creds.pg_db,
                             user=creds.pg_user,
                             password=creds.pg_pass)
