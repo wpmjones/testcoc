@@ -1,5 +1,7 @@
 import constants
 import random
+import psycopg2
+import creds
 
 from datetime import datetime, timedelta
 from flask import Flask
@@ -8,6 +10,22 @@ from flask_restful import Resource, Api, reqparse
 
 app = Flask(__name__)
 api = Api(app)
+
+
+def add_log(endpoint, *, limit=None, wrong_prefix=None, date_type=None):
+    conn = psycopg2.connect(host="172.104.144.45",
+                            dbname=creds.pg_db,
+                            user=creds.pg_user,
+                            password=creds.pg_pass)
+    sql = ("INSERT INTO coc_test_log (call_time, endpoint, call_limit, wrong_prefix, date_type) "
+           "VALUES (%s, %s, %s, %s, %s) "
+           "RETURNING id")
+    with conn.cursor() as cursor:
+        cursor.execute(sql, [datetime.utcnow(), endpoint, limit, wrong_prefix, date_type])
+        new_id = cursor.fetchone()[0]
+        print(new_id)
+    conn.commit()
+    conn.close()
 
 
 class About(Resource):
@@ -38,6 +56,7 @@ class ValidPlayerTags(Resource):
         args = self.reqparse.parse_args()
         limit = args['limit']
         wrong_prefix = args['wrong_prefix']
+        add_log("ValidPlayerTags", limit=limit, wrong_prefix=wrong_prefix)
         return_list = []
         if limit:
             while len(return_list) < limit:
@@ -69,6 +88,7 @@ class GarbledPlayerTags(Resource):
         args = self.reqparse.parse_args()
         limit = args['limit']
         wrong_prefix = args['wrong_prefix']
+        add_log("GarbledPlayerTags", limit=limit, wrong_prefix=wrong_prefix)
         return_list = []
         if limit:
             while len(return_list) < limit:
@@ -101,6 +121,7 @@ class InvalidPlayerTags(Resource):
         limit = args['limit']
         if not limit:
             limit = 190
+        add_log("InvalidPlayerTags", limit=limit)
         return_list = []
         while len(return_list) < limit:
             if len(return_list) == len(constants.valid_player_tags):
@@ -130,6 +151,7 @@ class ValidClanTags(Resource):
         args = self.reqparse.parse_args()
         limit = args['limit']
         wrong_prefix = args['wrong_prefix']
+        add_log("ValidClanTags", limit=limit, wrong_prefix=wrong_prefix)
         return_list = []
         if limit:
             while len(return_list) < limit:
@@ -161,6 +183,7 @@ class GarbledClanTags(Resource):
         args = self.reqparse.parse_args()
         limit = args['limit']
         wrong_prefix = args['wrong_prefix']
+        add_log("GarbledClanTags", limit=limit, wrong_prefix=wrong_prefix)
         return_list = []
         if limit:
             while len(return_list) < limit:
@@ -186,6 +209,7 @@ class InvalidClanTags(Resource):
     def get(self):
         args = self.reqparse.parse_args()
         limit = args['limit']
+        add_log("InvalidClanTags", limit=limit)
         if not limit:
             limit = 190
         return_list = []
@@ -216,6 +240,7 @@ class Dates(Resource):
         args = self.reqparse.parse_args()
         limit = args['limit']
         tense = args['date_type'].lower()
+        add_log("Dates", limit=limit, date_type=tense)
         return_list = []
         if not limit:
             limit = 255
